@@ -1,0 +1,80 @@
+# '-n' and '-r' options to be cosodered specially
+
+Getting command line arguments
+
+* Identifying the options from the command line arguments and store it somewhere
+  the resultant options should be evaluated 
+  if the options are incomplete (eg : -n <some other character,except a number>) should throw an
+    error like this : 'tail: illegal offset'
+  The number of lines should be always concatenated with the '-n'
+
+* Identifying file paths 
+  whatever arguments left after the first argument not an option should considered as file paths
+  and store it to somewhere
+
+* If the file paths are empty
+  If file paths are empty the program should wait for standard input. This standard data should be 
+  evaluated for tail operation 
+
+* If options are empty
+  If options are empty default option '-n10' and '-q' should store as the option
+
+
+
+Getting command line arguments 
+  process.argv 
+
+Filter option 
+  name : getOptions
+  input : -n 2 -q num.txt -r 
+  output : -n2 -q
+
+Filter file path 
+  input : -n 2 -q num.txt -r 
+  output : num.txt -r
+
+storing function references 
+  operations ={ '-n': getTailLines, '-r': reverseLines, '-q': supress };
+
+getTailLines
+  input : line numbers, content of file (this content will be appended to file path line)
+  output :
+      ==> file path <==
+      tail lines
+      .
+      .
+      .
+
+reverseLines
+  input : content :
+    ==> file path <==
+    1.
+    2.
+    3.
+
+  output : 
+    ==> file path <==
+    3.
+    2.
+    1.
+
+supress
+  input : content :
+    ==> file path <==
+    1.
+    2.
+    3.
+
+  output : content :
+    1.
+    2.
+    3.
+
+File path length 0
+  process.stdin 
+  content : 
+    ==> standard input <==
+    .
+    .
+    .
+

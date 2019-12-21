@@ -1,0 +1,199 @@
+num.txt > 1 \n 2 \n 3 \n ... 20
+small.txt > 1 \n 2 \n 3 \n 4
+
+num.txt has 20 lines of numbers one to 20
+small.txt has 4 lines of numbers one to four
+errorText.txt file does not exit
+
+1.tail num.txt
+2.tail -n 2 num.txt
+3.tail errorText.txt
+4.tail num.txt small.txt
+5.tail -n2 num.txt small.txt
+6.tail num.txt errorText.txt
+7.tail -r num.txt
+8.tail -r -n2 num.txt
+9.tail -r num.txt small.txt
+10.tail <num.txt
+11.tail -q -n2 num.txt small.txt
+12.tail <num.txt small.txt
+13.tail
+
+[1]
+--- tail num.txt ---
+output : lines of text : 
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+
+input : array of strings :
+  ['1','2','3',...'20']
+name : joinLastTenLines
+note : gives back last 10 lines of the given file
+
+[2]
+--- tail -n 2 num.txt ---
+output : lines of text:
+19
+20
+
+input : array of strings :
+  ['1','2','3',...'20']
+name : joinLastGivenNumberOfLines
+note : gives back last given number of lines of the given file
+
+
+[3]
+--- tail errorText.txt ---
+output : text : errorText
+  tail: errorText.txt: No such file or directory
+input : text : filepath
+  'errorText.txt'
+name : generateErrorMessage
+
+
+[4]
+--- tail num.txt small.txt  ---
+output : lines of text read from two files
+==> num.txt <==
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+==> small.txt <==
+1
+2
+3
+4
+
+input : array of strings :
+  ['1','2','3',...'20'],['1','2','3','4']
+  name : joinLastTenLinesOfMultipleFile
+
+[5]
+--- tail -n2 num.txt small.txt  ---
+output : lines of text read from two files
+==> num.txt <==
+19
+20
+==> small.txt <==
+3
+4
+
+input : array of strings :
+  ['1','2','3',...'20'],['1','2','3','4']
+  name : joinLastGivenNumberOfLinesMultipleFile
+
+
+[6]
+--- tail small.txt errorText.txt ---
+output : text : errorText of corresponding file
+==> small.txt <==
+1
+2
+3
+4
+tail: errorText.txt: No such file or directory
+input : multiple filepath
+name : **************************
+
+
+[7]
+--- tail -r num.txt ---
+output : text : all text of the file in reverse order
+20
+19
+18
+.
+.
+.
+3
+2
+1
+
+input : existing file path
+name : reverseContent
+
+[8]
+--- tail -r -n2 num.txt ---
+output : text : reverse text of tailed details
+20
+19
+
+input : existing file path
+name : reverseContent
+
+[9]
+--- tail -r num.txt small.txt ---
+output : text : reverse text of all the content of all the given file
+==> num.txt <==
+20
+19
+.
+.
+.
+3
+2
+1
+
+==> small.txt <==
+4
+3
+2
+1
+
+input : multiple existing filepath
+name : reverseContent
+
+[10]
+--- tail <num.txt ---
+output : text : tailed text of given standard input
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+
+input : standard input texts
+name : ***********************
+
+[11]
+--- tail -q -n2 num.txt small.txt ---
+output : text : tailed texts of two files supressed with filepath
+19
+20
+3
+4
+
+input : texts of multiple files
+name : ************************
+
+[12]
+--- tail <num.txt small.txt ---
+output : text : tailed text of second filepath 
+1
+2
+3
+4
+
+input : text : text of first file as standard input and second filepath
+name : *****************
+
