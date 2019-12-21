@@ -1,0 +1,34 @@
+# considering -n, -q, -r options only
+# pause after every functions and commits
+# follow TDD
+# start working by creating file tail.js , test directory and src directory
+# make package.json
+# use thesuarus to name variables and functions
+
+v.0.1
+[1]
+  getting command line arguments
+
+[2]
+  filter file path
+
+[3]
+  filtering options 
+
+[4]
+  identifying where to require standard inputs
+
+[5]
+  storing the function references corresponding to the each options in an object
+
+[6]
+  identifying the priority order of these functions
+
+[7]
+  based on the priority desiding what these functions exactly should do
+
+[8]
+  calling these functions for each file path or content of these file path or content 
+  of these file 
+  the out put of these functions will be the input to the function next to be executed
+  these final out put will be shown to user by some formatting

@@ -6,18 +6,21 @@ small.txt has 4 lines of numbers one to four
 errorText.txt file does not exit
 
 1.tail num.txt
-2.tail -n 2 num.txt
-3.tail errorText.txt
-4.tail num.txt small.txt
-5.tail -n2 num.txt small.txt
-6.tail num.txt errorText.txt
-7.tail -r num.txt
-8.tail -r -n2 num.txt
-9.tail -r num.txt small.txt
-10.tail <num.txt
-11.tail -q -n2 num.txt small.txt
-12.tail <num.txt small.txt
-13.tail
+2.tail
+3.tail <num.txt small.txt
+4.tail -n 2 num.txt
+5.tail errorText.txt
+6.tail num.txt small.txt
+7.tail -n2 num.txt small.txt
+8.tail num.txt errorText.txt
+9.tail -r num.txt
+10.tail -r -n2 num.txt
+11.tail -r num.txt small.txt
+12.tail <num.txt
+13.tail -q -n2 num.txt small.txt
+
+
+#################################################
 
 [1]
 --- tail num.txt ---
@@ -197,3 +200,7 @@ output : text : tailed text of second filepath
 input : text : text of first file as standard input and second filepath
 name : *****************
 
+[13]
+--- tail ---
+output : text : tail text of standard inputs with line number 10
+input : standard inputs
