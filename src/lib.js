@@ -19,39 +19,35 @@ const isNumOk = function(num) {
   return Number.isInteger(Math.abs(num)) && Math.abs(num) % 1 == 0;
 };
 
-const validateLineNum = function(cmdArgs, i) {
-  if (isNumOk(+cmdArgs[i].slice(2)) && +cmdArgs[i].length > 2) {
-    return cmdArgs[i];
+const doForN = function(cmdArgs, i) {
+  if (cmdArgs[i].length == 2 && isNumOk(cmdArgs[i + 1])) {
+    return [cmdArgs[i] + cmdArgs[i + 1], ++i];
   }
+  if (cmdArgs[i].length == 2 && !isNumOk(cmdArgs[i + 1])) {
+    return [undefined, ++i];
+  }
+  if (cmdArgs[i].length > 2 && isNumOk(cmdArgs[i].slice(2))) {
+    return [cmdArgs[i], i];
+  }
+  return [undefined, i];
 };
 
-const filterOptions = function(cmdArgs) {
+const fetchStandardOptions = function(cmdArgs) {
+  const fetchingFuncs = {
+    '-r': (cmdArgs, i) => [cmdArgs[i], i],
+    '-q': (cmdArgs, i) => [cmdArgs[i], i],
+    '-n': doForN
+  };
   const options = [];
-
+  const countOfOptions = { '-n': 0, '-r': 0, '-q': 0 };
   for (let i = 0; i < cmdArgs.length; i++) {
-    if (['-q', '-r'].includes(cmdArgs[i])) {
-      options.push(cmdArgs[i]);
-    }
-    if (cmdArgs[i].slice(0, 2) == '-n') {
-      options.push(validateLineNum(cmdArgs, i));
-    }
+    const action = fetchingFuncs[cmdArgs[i].slice(0, 2)];
+    options.push(action(cmdArgs, i)[0]);
+    ++countOfOptions[cmdArgs[i].slice(0, 2)];
+    i = action(cmdArgs, i)[1];
   }
-  return options;
-};
-
-/////////////////////////////////////////////////
-
-const doTail = function(cmdArgs) {
-  let options = filterOptions(cmdArgs);
-  let paths;
-  const firstPathIndex = getIndexOfFirstPath(cmdArgs, options);
-  if (firstPathIndex) {
-    options = options.slice(0, firstPathIndex);
-    paths = cmdArgs.slice(firstPathIndex);
-  } else {
-    options = options.slice(firstPathIndex);
-  }
-  return;
+  if (Object.values(countOfOptions).every(count => count < 2)) return options;
+  return [undefined];
 };
 
 const getIndexOfFirstPath = function(cmdArgs) {
@@ -66,13 +62,28 @@ const getIndexOfFirstPath = function(cmdArgs) {
       return i;
     }
   }
-  return NaN;
+  return cmdArgs.length;
+};
+
+/////////////////////////////////////////////////
+
+const doTail = function(cmdArgs) {
+  const indexOfFirstPath = getIndexOfFirstPath(cmdArgs);
+  let filePaths = cmdArgs.slice(indexOfFirstPath);
+  let options = cmdArgs.slice(0, indexOfFirstPath);
+  if (options.length == 0 && filePaths.length < 2) {
+    options = ['-n10', '-q'];
+  }
+  if (options.length == 0 && filePaths.length > 1) {
+    options = ['-n10'];
+  }
+  return fetchStandardOptions(options);
 };
 
 module.exports = {
   doTail,
   getFileOperations,
   getFileContent,
-  filterOptions,
+  fetchStandardOptions,
   getIndexOfFirstPath
 };

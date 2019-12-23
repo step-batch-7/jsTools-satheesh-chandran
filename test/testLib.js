@@ -3,7 +3,7 @@ const fs = require('fs');
 const {
   getFileOperations,
   getFileContent,
-  filterOptions,
+  fetchStandardOptions,
   getIndexOfFirstPath
 } = require('../src/lib');
 
@@ -64,33 +64,28 @@ describe('getFileContent', function() {
   });
 });
 
-describe('filterOptions', function() {
-  it('should return filtered options', function() {
-    const cmdArgs = ['-q', '-r', '-n2', 'num.txt'];
+describe('fetchStandardOptions', function() {
+  it('should return the copy of the inputs if it the input is a standard', function() {
+    const cmdArgs = ['-q', '-r', '-n2'];
     const expected = ['-q', '-r', '-n2'];
-    assert.deepStrictEqual(filterOptions(cmdArgs), expected);
+    assert.deepStrictEqual(fetchStandardOptions(cmdArgs), expected);
+  });
+  it('should return the standard options even if n option and line number given with space', function() {
+    const cmdArgs = ['-q', '-r', '-n', '2'];
+    const expected = ['-q', '-r', '-n2'];
+    assert.deepStrictEqual(fetchStandardOptions(cmdArgs), expected);
   });
   it('should the return value include undefined if the line number in appropriate', function() {
     const cmdArgs = ['-na'];
-    assert.isUndefined(filterOptions(cmdArgs)[0]);
+    assert.isUndefined(fetchStandardOptions(cmdArgs)[0]);
   });
   it('should the return include undefined if the line number is a decimal value', function() {
     const c = ['-n', '2.2'];
-    assert.isUndefined(filterOptions(c)[0]);
+    assert.isUndefined(fetchStandardOptions(c)[0]);
   });
-  it('should return all the options after the file path', function() {
-    const cmdArgs = ['-q', '-r', '-n2', 'num.txt', '-r', '-n2'];
-    const expected = ['-q', '-r', '-n2', '-r', '-n2'];
-    assert.deepStrictEqual(filterOptions(cmdArgs), expected);
-  });
-  it('the return value should include undefined if -n options is not proper', function() {
-    const cmdArgs = ['-n', '2', 'num.txt'];
-    assert.deepStrictEqual(filterOptions(cmdArgs), [undefined]);
-  });
-  it('should return the copy of array if every arguments are a valid option', function() {
-    const cmdArgs = ['-q', '-r', '-n2', '-r', '-n2'];
-    const expected = ['-q', '-r', '-n2', '-r', '-n2'];
-    assert.deepStrictEqual(filterOptions(cmdArgs), expected);
+  it('should return value include undefined if same options repeated more than one time', function() {
+    const cmdArgs = ['-q', '-r', '-n2', '-n3'];
+    assert.deepStrictEqual(fetchStandardOptions(cmdArgs), [undefined]);
   });
 });
 
@@ -103,13 +98,13 @@ describe('getIndexOfFirstPath', function() {
     const cmdArgs = ['-q', '-r', '-n2', 'num.txt', '-r', '-n2'];
     assert.equal(getIndexOfFirstPath(cmdArgs), 3);
   });
-  it('should return undefined if no file path given', function() {
+  it('should return length of the array if no file path given', function() {
     const cmdArgs = ['-q', '-r', '-n2', '-r', '-n2'];
-    assert.isNaN(getIndexOfFirstPath(cmdArgs));
+    assert.equal(getIndexOfFirstPath(cmdArgs), 5);
   });
-  it('should return undefined if the -n option is in complete', function() {
+  it('should return length of the array if the -n option is in complete', function() {
     const cmdArgs = ['-q', '-r', '-n'];
-    assert.isNaN(getIndexOfFirstPath(cmdArgs));
+    assert.equal(getIndexOfFirstPath(cmdArgs), 3);
   });
   it('should return index of first file path even if number of lines are incorrect', function() {
     const cmdArgs = ['-q', '-r', '-na', 'num.txt'];
