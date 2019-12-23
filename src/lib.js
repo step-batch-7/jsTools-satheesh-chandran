@@ -41,13 +41,6 @@ const filterOptions = function(cmdArgs) {
 
 /////////////////////////////////////////////////
 
-const getIndexOfFirstPath = function(cmdArgs, options) {
-  for (let i = 0; i < options.length; i++) {
-    if (options[i] != cmdArgs[i]) return i;
-  }
-  return NaN;
-};
-
 const doTail = function(cmdArgs) {
   let options = filterOptions(cmdArgs);
   let paths;
@@ -59,6 +52,21 @@ const doTail = function(cmdArgs) {
     options = options.slice(firstPathIndex);
   }
   return;
+};
+
+const getIndexOfFirstPath = function(cmdArgs) {
+  for (let i = 0; i < cmdArgs.length; i++) {
+    let occuranceOfRQ = ['-r', '-q'].includes(cmdArgs[i]);
+    if (cmdArgs[i] == '-n') i++;
+    let nonOccuranceOfN =
+      cmdArgs[i] != undefined &&
+      cmdArgs[i].slice(0, 2) != '-n' &&
+      cmdArgs[i - 1] != '-n';
+    if (!occuranceOfRQ && nonOccuranceOfN) {
+      return i;
+    }
+  }
+  return NaN;
 };
 
 module.exports = {

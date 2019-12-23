@@ -95,14 +95,30 @@ describe('filterOptions', function() {
 });
 
 describe('getIndexOfFirstPath', function() {
-  it('should return the index of the first path in the cmdArgs', function() {
-    const cmdArgs = ['-q', '-r', '-n2', 'num.txt', '-r', '-n2'];
-    const options = ['-q', '-r', '-n2', '-r', '-n2'];
-    assert.equal(getIndexOfFirstPath(cmdArgs, options), 3);
+  it('should return the index of the first file path', function() {
+    const cmdArgs = ['-q', '-r', '-n', '2', 'num.txt', '-r', '-n2'];
+    assert.equal(getIndexOfFirstPath(cmdArgs), 4);
   });
-  it('should return NaN if no path is present', function() {
+  it('should return the index of the first path if number of lines given without space', function() {
+    const cmdArgs = ['-q', '-r', '-n2', 'num.txt', '-r', '-n2'];
+    assert.equal(getIndexOfFirstPath(cmdArgs), 3);
+  });
+  it('should return undefined if no file path given', function() {
     const cmdArgs = ['-q', '-r', '-n2', '-r', '-n2'];
-    const options = ['-q', '-r', '-n2', '-r', '-n2'];
-    assert.isNaN(getIndexOfFirstPath(cmdArgs, options));
+    assert.isNaN(getIndexOfFirstPath(cmdArgs));
+  });
+  it('should return undefined if the -n option is in complete', function() {
+    const cmdArgs = ['-q', '-r', '-n'];
+    assert.isNaN(getIndexOfFirstPath(cmdArgs));
+  });
+  it('should return index of first file path even if number of lines are incorrect', function() {
+    const cmdArgs = ['-q', '-r', '-na', 'num.txt'];
+    assert.equal(getIndexOfFirstPath(cmdArgs), 3);
+    const c = ['-q', '-r', '-n', 'a', 'num.txt'];
+    assert.equal(getIndexOfFirstPath(c), 4);
+  });
+  it('should return the index of the first file path even if one option present twice before path', function() {
+    const cmdArgs = ['-q', '-r', '-na', '-n', '2', 'num.txt'];
+    assert.equal(getIndexOfFirstPath(cmdArgs), 5);
   });
 });
