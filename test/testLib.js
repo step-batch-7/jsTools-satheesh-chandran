@@ -1,68 +1,9 @@
 const assert = require('chai').assert;
-const fs = require('fs');
 const {
-  getFileOperations,
-  getFileContent,
   fetchStandardOptions,
-  getIndexOfFirstPath
+  getIndexOfFirstPath,
+  getPrioritizedOptions
 } = require('../src/lib');
-
-describe('getFileOperations', function() {
-  it('should give the object of file operations', function() {
-    const expected = {
-      read: fs.readFileSync,
-      encoding: 'utf8',
-      exist: fs.existsSync
-    };
-    assert.deepStrictEqual(getFileOperations(), expected);
-  });
-});
-
-describe('getFileContent', function() {
-  it('should return the file content if called with an existing path', function() {
-    const read = function(path, encoding) {
-      assert.strictEqual('./test/testFile', path);
-      assert.strictEqual('utf8', encoding);
-      return 'hello';
-    };
-
-    const exist = function(path) {
-      assert.strictEqual('./test/testFile', path);
-      return true;
-    };
-
-    let fileOperations = {
-      read: read,
-      exist: exist,
-      encoding: 'utf8'
-    };
-
-    let expected = 'hello';
-    let actual = getFileContent(fileOperations, './test/testFile');
-    assert.deepStrictEqual(actual, expected);
-  });
-  it('should return undefined if called with a non existing path', function() {
-    const read = function(path, encoding) {
-      assert.strictEqual('./test/testFile', path);
-      assert.strictEqual('utf8', encoding);
-      return;
-    };
-
-    const exist = function(path) {
-      assert.strictEqual('./test/testFile', path);
-      return false;
-    };
-
-    let fileOperations = {
-      read: read,
-      exist: exist,
-      encoding: 'utf8'
-    };
-
-    let actual = getFileContent(fileOperations, './test/testFile');
-    assert.isUndefined(actual);
-  });
-});
 
 describe('fetchStandardOptions', function() {
   it('should return the copy of the inputs if it the input is a standard', function() {
@@ -115,5 +56,22 @@ describe('getIndexOfFirstPath', function() {
   it('should return the index of the first file path even if one option present twice before path', function() {
     const cmdArgs = ['-q', '-r', '-na', '-n', '2', 'num.txt'];
     assert.equal(getIndexOfFirstPath(cmdArgs), 5);
+  });
+});
+
+describe('getPrioritizedOptions', function() {
+  it('should return an array in a prioritized order', function() {
+    const options = ['-n10', '-r', '-q'];
+    const expected = ['-n10', '-r', '-q'];
+    assert.deepStrictEqual(getPrioritizedOptions(options), expected);
+    const a = ['-r', '-n10', '-q'];
+    assert.deepStrictEqual(getPrioritizedOptions(a), expected);
+    const b = ['-q', '-r', '-n10'];
+    assert.deepStrictEqual(getPrioritizedOptions(b), expected);
+  });
+  it('should work if one of the primary option not present in the input', function() {
+    const options = ['-q', '-n10'];
+    const expected = ['-n10', '-q'];
+    assert.deepStrictEqual(getPrioritizedOptions(options), expected);
   });
 });

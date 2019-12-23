@@ -6,13 +6,13 @@
 # use thesuarus to name variables and functions
 
 v.0.1
-[1]
+[1]-- done --
   getting command line arguments
 
-[2]
+[2]-- done --
   filter file path
 
-[3]
+[3]-- done --
   filtering options 
 
 [4]

@@ -1,19 +1,5 @@
 const fs = require('fs');
-
-const getFileOperations = function() {
-  return { read: fs.readFileSync, encoding: 'utf8', exist: fs.existsSync };
-};
-
-const getFileContent = function(fileOperations, path) {
-  const read = fileOperations.read;
-  const encoding = fileOperations.encoding;
-  const exist = fileOperations.exist;
-  if (exist(path)) {
-    return read(path, encoding);
-  }
-};
-
-/////////////////////////////////////////////////
+const doOptionalOperations = require('./tailOperations').doOptionalOperations;
 
 const isNumOk = function(num) {
   return Number.isInteger(Math.abs(num)) && Math.abs(num) % 1 == 0;
@@ -65,6 +51,16 @@ const getIndexOfFirstPath = function(cmdArgs) {
   return cmdArgs.length;
 };
 
+const getPrioritizedOptions = function(options) {
+  const prioritizedOptions = [];
+  if (options.includes('-r')) prioritizedOptions.push('-r');
+  if (options.includes('-q')) prioritizedOptions.push('-q');
+  for (let i = 0; i < options.length; i++) {
+    if (options[i].slice(0, 2) == '-n') prioritizedOptions.unshift(options[i]);
+  }
+  return prioritizedOptions;
+};
+
 /////////////////////////////////////////////////
 
 const doTail = function(cmdArgs) {
@@ -77,13 +73,14 @@ const doTail = function(cmdArgs) {
   if (options.length == 0 && filePaths.length > 1) {
     options = ['-n10'];
   }
-  return fetchStandardOptions(options);
+  const standardOptions = fetchStandardOptions(options);
+  const leadOptions = getPrioritizedOptions(standardOptions);
+  return doOptionalOperations(leadOptions, filePaths);
 };
 
 module.exports = {
   doTail,
-  getFileOperations,
-  getFileContent,
   fetchStandardOptions,
-  getIndexOfFirstPath
+  getIndexOfFirstPath,
+  getPrioritizedOptions
 };
