@@ -5,55 +5,18 @@ const getFileOperations = function() {
 };
 
 const getFileContent = function(fileOperations, path) {
-  const read = fileOperations.read;
-  const encoding = fileOperations.encoding;
-  const exist = fileOperations.exist;
-  if (exist(path)) return read(path, encoding);
+  if (fileOperations.exist(path)) {
+    return fileOperations.read(path, fileOperations.encoding);
+  }
+  return null;
 };
 
 const getTailedLines = function(content, lineNum) {
-  const headLine = content[0];
   const lastNNumberOfLines = content.slice(-lineNum);
-  lastNNumberOfLines.unshift(headLine);
   return lastNNumberOfLines;
 };
 
-const reverseLines = function(content) {
-  const headLine = content[0];
-  const reversedLines = content.slice(1).reverse();
-  reversedLines.unshift(headLine);
-  return reversedLines;
-};
-
-const supressFilename = function(content) {
-  const supressedContent = content.slice(1);
-  return supressedContent;
-};
-
-const getOperatedLines = function(options, content, optionalOperations) {
-  let resultantLines = content;
-  for (let i = 0; i < options.length; i++) {
-    let action = optionalOperations[options[i].slice(0, 2)];
-    resultantLines = action(resultantLines, options[i].slice(2));
-  }
-  return resultantLines;
-};
-
-const actionForOnePath = function(options, optionalOperations) {
-  return function(path) {
-    const fileOperations = getFileOperations();
-    if (getFileContent(fileOperations, path) == undefined) {
-      return [`tail: ${path}: No such file or directory`];
-    }
-    let resultantLines = getFileContent(fileOperations, path).split('\n');
-    resultantLines.unshift(`==> ${path} <==`);
-    return getOperatedLines(options, resultantLines, optionalOperations).join(
-      ','
-    );
-  };
-};
-
-const actionForStdInput = function(options, optionalOperations) {
+const actionForStdInput = function(option, getTailedLines) {
   let resultantLines = '==> stdin <==\n';
   process.stdin.setEncoding('utf8');
   process.stdin.on('data', data => {
@@ -61,33 +24,26 @@ const actionForStdInput = function(options, optionalOperations) {
   });
   process.stdin.on('end', () => {
     resultantLines = resultantLines.split('\n');
-    process.stdout.write(
-      getOperatedLines(options, resultantLines, optionalOperations).join('\n')
-    );
+    const lineNum = option[0].slice(2);
+    process.stdout.write(getTailedLines(resultantLines, lineNum).join('\n'));
   });
 };
 
-const doOptionalOperations = function(options, paths) {
-  const optionalOperations = {
-    '-n': getTailedLines,
-    '-r': reverseLines,
-    '-q': supressFilename
-  };
-  if (paths.length == 0) {
-    actionForStdInput(options, optionalOperations);
+const operateTail = function(option, path) {
+  if (path.length == 0) {
+    actionForStdInput(option, getTailedLines);
+    return [];
   }
-  const resultantLines = [];
-  resultantLines.push(
-    ...paths.map(actionForOnePath(options, optionalOperations))
-  );
-  return resultantLines.join(',').split(',');
+  const fileOperations = getFileOperations();
+  const content = getFileContent(fileOperations, path[0]);
+  if (content == null) return [`tail: ${path[0]}: No such file or directory`];
+  resultantLines = getTailedLines(content.split('\n'), option[0].slice(2));
+  return resultantLines;
 };
 
 module.exports = {
-  doOptionalOperations,
-  getTailedLines,
-  reverseLines,
-  supressFilename,
   getFileOperations,
-  getFileContent
+  getFileContent,
+  getTailedLines,
+  operateTail
 };

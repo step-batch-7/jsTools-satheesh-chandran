@@ -1,0 +1,28 @@
+---------appTest/req_02_file_content_as_std_in.test----------
+			<= command =>
+(node tail.js <./docs/num.txt)
+
+			<= actual output =>
+
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+			<= expected output =>
+
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
