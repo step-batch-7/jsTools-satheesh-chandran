@@ -1,11 +1,10 @@
-const fs = require('fs');
 const doOptionalOperations = require('./tailOperations').doOptionalOperations;
 
 const isNumOk = function(num) {
   return Number.isInteger(Math.abs(num)) && Math.abs(num) % 1 == 0;
 };
 
-const doForN = function(cmdArgs, i) {
+const giveStandardNOption = function(cmdArgs, i) {
   if (cmdArgs[i].length == 2 && isNumOk(cmdArgs[i + 1])) {
     return [cmdArgs[i] + cmdArgs[i + 1], ++i];
   }
@@ -22,7 +21,7 @@ const fetchStandardOptions = function(cmdArgs) {
   const fetchingFuncs = {
     '-r': (cmdArgs, i) => [cmdArgs[i], i],
     '-q': (cmdArgs, i) => [cmdArgs[i], i],
-    '-n': doForN
+    '-n': giveStandardNOption
   };
   const options = [];
   const countOfOptions = { '-n': 0, '-r': 0, '-q': 0 };
@@ -38,9 +37,9 @@ const fetchStandardOptions = function(cmdArgs) {
 
 const getIndexOfFirstPath = function(cmdArgs) {
   for (let i = 0; i < cmdArgs.length; i++) {
-    let occuranceOfRQ = ['-r', '-q'].includes(cmdArgs[i]);
+    const occuranceOfRQ = ['-r', '-q'].includes(cmdArgs[i]);
     if (cmdArgs[i] == '-n') i++;
-    let nonOccuranceOfN =
+    const nonOccuranceOfN =
       cmdArgs[i] != undefined &&
       cmdArgs[i].slice(0, 2) != '-n' &&
       cmdArgs[i - 1] != '-n';
@@ -74,6 +73,8 @@ const doTail = function(cmdArgs) {
     options = ['-n10'];
   }
   const standardOptions = fetchStandardOptions(options);
+  if (standardOptions.includes(undefined))
+    return ['usage: tail [-r] [-q] [-n #] [file ...]'];
   const leadOptions = getPrioritizedOptions(standardOptions);
   return doOptionalOperations(leadOptions, filePaths);
 };
