@@ -23,20 +23,18 @@ const getIndexOfPath = function(cmdArgs) {
   return cmdArgs.length;
 };
 
-const concatOption = function(options) {
-  return function(option, i) {
-    if (option == '-n') {
-      i++;
-      return option + options[i];
-    }
-    return option;
-  };
+const concatOption = function(options, option, i) {
+  if (option == '-n') {
+    i++;
+    return option + options[i];
+  }
+  return option;
 };
 
 const doTail = function(cmdArgs) {
   const indexOfPath = getIndexOfPath(cmdArgs);
   const options = cmdArgs.slice(0, indexOfPath);
-  let option = options.map(concatOption(options));
+  let option = options.map(concatOption.bind(null, options));
   const path = cmdArgs.slice(indexOfPath);
   if (option.length == 0 || path.length == 0) option.push('-n10');
   if (!option.every(isLineNumOk)) return usage();

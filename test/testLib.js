@@ -13,9 +13,10 @@ describe('getIndexOfPath', function() {
 
 describe('concatOption', function() {
   it('should return the concatenated option', function() {
-    assert.deepStrictEqual(concatOption(['-n', '2']), ['-n2']);
+    const options = ['-n', '2'];
+    assert.deepStrictEqual(concatOption(options, '-n', 0), '-n2');
   });
   it('should return the same array if option already concatenated', function() {
-    assert.deepStrictEqual(concatOption(['-n2']), ['-n2']);
+    assert.deepStrictEqual(concatOption(['-n2'], '-n2', 0), '-n2');
   });
 });
