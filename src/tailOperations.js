@@ -11,7 +11,7 @@ const getFileContent = function(fileOperations, path) {
   return null;
 };
 
-const getTailedLines = function(content, lineNum) {
+const getTailLines = function(content, lineNum) {
   const lastNNumberOfLines = content.slice(-lineNum);
   return lastNNumberOfLines;
 };
@@ -24,29 +24,29 @@ const actionForStdInput = function(option, getTailedLines) {
   });
   process.stdin.on('end', () => {
     resultantLines = resultantLines.split('\n');
-    const lineNum = option[0].slice(2);
+    const lineNum = option.slice(2);
     process.stdout.write(getTailedLines(resultantLines, lineNum).join('\n'));
   });
 };
 
-const operateTail = function(option, path, output) {
-  if (path.length == 0) {
-    actionForStdInput(option, getTailedLines);
-    return output;
+const operateTail = function(option, path, tailResult) {
+  if (!path) {
+    actionForStdInput(option, getTailLines);
+    return tailResult;
   }
   const fileOperations = getFileOperations();
-  const content = getFileContent(fileOperations, path[0]);
+  const content = getFileContent(fileOperations, path);
   if (!content) {
-    output.err = `tail: ${path[0]}: No such file or directory`;
-    return output;
+    tailResult.err = `tail: ${path}: No such file or directory`;
+    return tailResult;
   }
-  output.content = getTailedLines(content.split('\n'), option[0].slice(2));
-  return output;
+  tailResult.content = getTailLines(content.split('\n'), option.slice(2));
+  return tailResult;
 };
 
 module.exports = {
   getFileOperations,
   getFileContent,
-  getTailedLines,
+  getTailLines,
   operateTail
 };

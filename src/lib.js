@@ -1,52 +1,51 @@
 const operateTail = require('./tailOperations').operateTail;
 
 const usage = () => 'usage: tail [-n #] [file ...]';
+
 const isLineNumOk = function(option) {
   const num = +option.slice(2);
   return Number.isInteger(Math.abs(num)) && Math.abs(num) % 1 == 0;
 };
 
-const getNonOccuranceOfN = function(cmdArgs, i) {
-  return (
-    cmdArgs[i] != undefined &&
-    cmdArgs[i].slice(0, 2) != '-n' &&
-    cmdArgs[i - 1] != '-n'
-  );
-};
-
-const getIndexOfPath = function(cmdArgs) {
-  for (i = 0; i < cmdArgs.length; i++) {
-    if (cmdArgs[i] == '-n') i++;
-    const nonOccuranceOfN = getNonOccuranceOfN(cmdArgs, i);
-    if (nonOccuranceOfN) return i;
+const concatNOption = function(cmdArgs) {
+  const userArguments = [];
+  for (let index = 0; index < cmdArgs.length; index++) {
+    if (cmdArgs[index] == '-n') {
+      userArguments.push(cmdArgs[index] + cmdArgs[index + 1]);
+      index++;
+    } else userArguments.push(cmdArgs[index]);
   }
-  return cmdArgs.length;
+  return userArguments;
 };
 
-const concatOption = function(options, option, i) {
-  if (option == '-n') {
-    i++;
-    return option + options[i];
+const filterOptionAndFilePath = function(cmdArgs) {
+  let firstFilePathIndex;
+  const userArgs = concatNOption(cmdArgs);
+  for (let index = 0; index < userArgs.length; index++) {
+    if (userArgs[index].slice(0, 2) != '-n') {
+      firstFilePathIndex = index;
+      break;
+    }
   }
-  return option;
+  if (firstFilePathIndex == undefined) firstFilePathIndex = userArgs.length;
+  return [
+    userArgs.slice(0, firstFilePathIndex),
+    userArgs.slice(firstFilePathIndex)
+  ];
 };
 
-const doTail = function(cmdArgs) {
-  const output = { err: '', content: [''] };
-  const indexOfPath = getIndexOfPath(cmdArgs);
-  const options = cmdArgs.slice(0, indexOfPath);
-  let option = options.map(concatOption.bind(null, options));
-  const path = cmdArgs.slice(indexOfPath);
-  if (option.length == 0 || path.length == 0) option.push('-n10');
+const getLastLines = function(cmdArgs) {
+  const tailResult = { err: '', content: [''] };
+  let [option, filePath] = filterOptionAndFilePath(cmdArgs);
+  if (option.length == 0) option = ['-n10'];
   if (!option.every(isLineNumOk)) {
-    output.err = usage();
-    return output;
+    tailResult.err = usage();
+    return tailResult;
   }
-  return operateTail(option, path, output);
+  return operateTail(option[0], filePath[0], tailResult);
 };
 
 module.exports = {
-  doTail,
-  getIndexOfPath,
-  concatOption
+  getLastLines,
+  concatNOption
 };

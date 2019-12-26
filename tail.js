@@ -1,8 +1,8 @@
-const doTail = require('./src/lib').doTail;
+const getLastLines = require('./src/lib').getLastLines;
 
 const main = () => {
   const cmdArgs = process.argv.slice(2);
-  const output = doTail(cmdArgs);
+  const output = getLastLines(cmdArgs);
   process.stderr.write(output.err);
   process.stdout.write(output.content.join('\n'));
 };
