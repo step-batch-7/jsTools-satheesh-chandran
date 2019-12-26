@@ -6,5 +6,19 @@
 # use thesuarus to name variables and functions
 
 v 0.1 only one option '-n' with a single file and std input 
+  node tail.js  docs/num.txt -> gives last 10 lines
+  node tail.js -n2 docs/num.txt -> gives last 2 lines
+  node tail.js <docs/num.txt-> gives last 10 lines of std input
+  node tail.js -n2 <docs/num.txt-> gives last 2 lines of std input
+  node tail.js -q docs/num.txt-> gives error text becuase no file existing 
+    such as -q
+  node tail.js -n2 -n3 docs/num.txt-> gives last 2 lines
 
+v 0.2 this version should accept the options -q and -n also
+  and mutiple files
+
+  node tail.js num.txt small.txt -> gives last 10 lines of both files with file names
+  node tail.js -n2 num.txt small.txt -> gives last 2 lines of both files with file names
+  node tail.js -n2 -q num.txt small.txt -> gives last 10 lines of both files without file names
+  
 

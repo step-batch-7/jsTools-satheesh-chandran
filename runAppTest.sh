@@ -1,12 +1,12 @@
-# version 1.3
+# version 1.42
 runTest() {
   local test=$1
-  local command=`head -1 $test`
+  local command=`head -1 $test #| tr -d '\r'`
   #echo $command
   sed "1d" $test > expected.txt
   #cat expected_output.txt
   eval $command &> output.txt
-  cmp output.txt expected.txt > /dev/null
+  diff -b output.txt expected.txt > /dev/null
   if [ $? -eq 0 ]
   then
     result="✅"
@@ -18,6 +18,8 @@ runTest() {
     cat output.txt >> failures.txt
     echo "\n\t\t\t<= expected output =>" >> failures.txt
     cat expected.txt >> failures.txt
+    echo "\n\t\t\t<= difference =>" >> failures.txt
+    diff output.txt expected.txt >> failures.txt
   fi
   rm -f output.txt expected.txt
   echo "$result $test"

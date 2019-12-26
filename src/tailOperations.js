@@ -29,16 +29,19 @@ const actionForStdInput = function(option, getTailedLines) {
   });
 };
 
-const operateTail = function(option, path) {
+const operateTail = function(option, path, output) {
   if (path.length == 0) {
     actionForStdInput(option, getTailedLines);
-    return [];
+    return output;
   }
   const fileOperations = getFileOperations();
   const content = getFileContent(fileOperations, path[0]);
-  if (content == null) return [`tail: ${path[0]}: No such file or directory`];
-  resultantLines = getTailedLines(content.split('\n'), option[0].slice(2));
-  return resultantLines;
+  if (!content) {
+    output.err = `tail: ${path[0]}: No such file or directory`;
+    return output;
+  }
+  output.content = getTailedLines(content.split('\n'), option[0].slice(2));
+  return output;
 };
 
 module.exports = {

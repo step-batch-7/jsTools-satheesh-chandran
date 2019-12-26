@@ -1,0 +1,2 @@
+(node tail.js -n a docs/num.txt)
+usage: tail [-n #] [file ...]

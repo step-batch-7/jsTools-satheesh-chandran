@@ -1,6 +1,6 @@
 const operateTail = require('./tailOperations').operateTail;
 
-const usage = () => ['usage: tail [-n #] [file ...]'];
+const usage = () => 'usage: tail [-n #] [file ...]';
 const isLineNumOk = function(option) {
   const num = +option.slice(2);
   return Number.isInteger(Math.abs(num)) && Math.abs(num) % 1 == 0;
@@ -32,13 +32,17 @@ const concatOption = function(options, option, i) {
 };
 
 const doTail = function(cmdArgs) {
+  const output = { err: '', content: [''] };
   const indexOfPath = getIndexOfPath(cmdArgs);
   const options = cmdArgs.slice(0, indexOfPath);
   let option = options.map(concatOption.bind(null, options));
   const path = cmdArgs.slice(indexOfPath);
   if (option.length == 0 || path.length == 0) option.push('-n10');
-  if (!option.every(isLineNumOk)) return usage();
-  return operateTail(option, path);
+  if (!option.every(isLineNumOk)) {
+    output.err = usage();
+    return output;
+  }
+  return operateTail(option, path, output);
 };
 
 module.exports = {

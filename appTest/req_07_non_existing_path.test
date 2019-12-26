@@ -1,0 +1,2 @@
+(node tail.js num.txt)
+tail: num.txt: No such file or directory
