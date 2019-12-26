@@ -34,8 +34,7 @@ const operateTail = function(option, path, tailResult) {
     actionForStdInput(option, getTailLines);
     return tailResult;
   }
-  const fileOperations = getFileOperations();
-  const content = getFileContent(fileOperations, path);
+  const content = getFileContent(getFileOperations(), path);
   if (!content) {
     tailResult.err = `tail: ${path}: No such file or directory`;
     return tailResult;

@@ -1,22 +1,32 @@
 const assert = require('chai').assert;
-const { getIndexOfPath, concatOption } = require('../src/lib');
+const { filterOptionsAndFilePaths, concatNOption } = require('../src/lib');
 
-describe('getIndexOfPath', function() {
-  it('should return the index of the path', function() {
-    assert.equal(getIndexOfPath(['-n', '2', 'num.txt']), 2);
-    assert.equal(getIndexOfPath(['-n2', 'num.txt']), 1);
+describe('concatNOption', function() {
+  it('should return the concatenated option', function() {
+    const options = ['-n', '2'];
+    assert.deepStrictEqual(concatNOption(options), ['-n2']);
   });
-  it('should return length of the cmdArgs if no file path found', function() {
-    assert.equal(getIndexOfPath(['-n2']), 1);
+  it('should return the same array if option already concatenated', function() {
+    assert.deepStrictEqual(concatNOption(['-n2']), ['-n2']);
   });
 });
 
-describe('concatOption', function() {
-  it('should return the concatenated option', function() {
-    const options = ['-n', '2'];
-    assert.deepStrictEqual(concatOption(options, '-n', 0), '-n2');
+describe('filterOptionsAndFilePaths ', function() {
+  it('should filter the options and filepaths from the command line arguments', function() {
+    const cmdArgs = ['-n', '2', 'num.txt'];
+    const expected = [['-n2'], ['num.txt']];
+    assert.deepStrictEqual(filterOptionsAndFilePaths(cmdArgs), expected);
   });
-  it('should return the same array if option already concatenated', function() {
-    assert.deepStrictEqual(concatOption(['-n2'], '-n2', 0), '-n2');
+  it('should return empty array if command line argiments are empty', function() {
+    assert.deepStrictEqual(filterOptionsAndFilePaths([]), [[], []]);
+  });
+  it('option part should be empty if no option given', function() {
+    assert.deepStrictEqual(filterOptionsAndFilePaths(['num.txt']), [
+      [],
+      ['num.txt']
+    ]);
+  });
+  it('path part should be empty if no path is given', function() {
+    assert.deepStrictEqual(filterOptionsAndFilePaths(['-n2']), [['-n2'], []]);
   });
 });

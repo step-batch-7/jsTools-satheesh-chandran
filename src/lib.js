@@ -18,7 +18,7 @@ const concatNOption = function(cmdArgs) {
   return userArguments;
 };
 
-const filterOptionAndFilePath = function(cmdArgs) {
+const filterOptionsAndFilePaths = function(cmdArgs) {
   let firstFilePathIndex;
   const userArgs = concatNOption(cmdArgs);
   for (let index = 0; index < userArgs.length; index++) {
@@ -36,7 +36,7 @@ const filterOptionAndFilePath = function(cmdArgs) {
 
 const getLastLines = function(cmdArgs) {
   const tailResult = { err: '', content: [''] };
-  let [option, filePath] = filterOptionAndFilePath(cmdArgs);
+  let [option, filePath] = filterOptionsAndFilePaths(cmdArgs);
   if (option.length == 0) option = ['-n10'];
   if (!option.every(isLineNumOk)) {
     tailResult.err = usage();
@@ -47,5 +47,6 @@ const getLastLines = function(cmdArgs) {
 
 module.exports = {
   getLastLines,
-  concatNOption
+  concatNOption,
+  filterOptionsAndFilePaths
 };
