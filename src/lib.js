@@ -1,4 +1,4 @@
-const operateTail = require('./tailOperations').operateTail;
+const { operateTail } = require('./tailOperations');
 
 const usage = () => 'usage: tail [-n #] [file ...]';
 
@@ -18,23 +18,23 @@ const concatNOption = function(cmdArgs) {
   return userArguments;
 };
 
-const filterOptionsAndFilePaths = function(cmdArgs) {
-  let firstFilePathIndex;
-  const userArgs = concatNOption(cmdArgs);
+const getIndexOfFirstFilePath = function(userArgs) {
   for (let index = 0; index < userArgs.length; index++) {
-    if (userArgs[index].slice(0, 2) != '-n') {
-      firstFilePathIndex = index;
-      break;
-    }
+    if (userArgs[index].slice(0, 2) != '-n') return index;
   }
-  if (firstFilePathIndex == undefined) firstFilePathIndex = userArgs.length;
+  return userArgs.length;
+};
+
+const filterOptionsAndFilePaths = function(cmdArgs) {
+  const userArgs = concatNOption(cmdArgs);
+  const firstFilePathPosition = getIndexOfFirstFilePath(userArgs);
   return [
-    userArgs.slice(0, firstFilePathIndex),
-    userArgs.slice(firstFilePathIndex)
+    userArgs.slice(0, firstFilePathPosition),
+    userArgs.slice(firstFilePathPosition)
   ];
 };
 
-const getLastLines = function(cmdArgs) {
+const getLastLines = function(cmdArgs, fileSystem) {
   const tailResult = { err: '', content: [''] };
   let [option, filePath] = filterOptionsAndFilePaths(cmdArgs);
   if (option.length == 0) option = ['-n10'];
@@ -42,7 +42,7 @@ const getLastLines = function(cmdArgs) {
     tailResult.err = usage();
     return tailResult;
   }
-  return operateTail(option[0], filePath[0], tailResult);
+  return operateTail(option[0], filePath[0], tailResult, fileSystem);
 };
 
 module.exports = {

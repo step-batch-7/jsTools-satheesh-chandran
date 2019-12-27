@@ -1,22 +1,9 @@
 const assert = require('chai').assert;
-const fs = require('fs');
 const {
   getTailLines,
-  getFileContent,
-  getFileOperations,
-  operateTail
+  operateTail,
+  getFileContent
 } = require('../src/tailOperations');
-
-describe('getFileOperations', function() {
-  it('should give the object of file operations', function() {
-    const expected = {
-      read: fs.readFileSync,
-      encoding: 'utf8',
-      exist: fs.existsSync
-    };
-    assert.deepStrictEqual(getFileOperations(), expected);
-  });
-});
 
 describe('getFileContent', function() {
   it('should return the file content if called with an existing path', function() {
@@ -68,5 +55,42 @@ describe('getTailLines', function() {
     const content = ['file name', 1, 2, 3, 4];
     const expected = [3, 4];
     assert.deepStrictEqual(getTailLines(content, 2), expected);
+  });
+});
+
+describe('operateTail', function() {
+  it('should give the last 10 lines of the content of the file given', function() {
+    let fileOperations = {
+      read: () => '0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10',
+      encoding: 'utf8',
+      exist: () => true
+    };
+    const tailResult = { err: '', content: [''] };
+    const expected = {
+      err: '',
+      content: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+    };
+
+    assert.deepStrictEqual(
+      operateTail('-n10', 'num.txt', tailResult, fileOperations),
+      expected
+    );
+  });
+  it('the tail result should contain a desired error string', function() {
+    let fileOperations = {
+      read: () => null,
+      encoding: 'utf8',
+      exist: () => false
+    };
+    const tailResult = { err: '', content: [''] };
+    const expected = {
+      err: 'tail: num.txt: No such file or directory',
+      content: ['']
+    };
+
+    assert.deepStrictEqual(
+      operateTail('-n10', 'num.txt', tailResult, fileOperations),
+      expected
+    );
   });
 });
