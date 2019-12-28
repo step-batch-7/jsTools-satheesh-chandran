@@ -1,3 +1,3 @@
-(node tail.js -n2 docs/num.txt)
+(node tail.js -n 2 docs/num.txt)
 19
 20

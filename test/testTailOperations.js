@@ -65,14 +65,13 @@ describe('operateTail', function() {
       encoding: 'utf8',
       exist: () => true
     };
-    const tailResult = { err: '', content: [''] };
     const expected = {
       err: '',
       content: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
     };
 
     assert.deepStrictEqual(
-      operateTail('-n10', 'num.txt', tailResult, fileOperations),
+      operateTail('10', 'num.txt', fileOperations),
       expected
     );
   });
@@ -82,14 +81,29 @@ describe('operateTail', function() {
       encoding: 'utf8',
       exist: () => false
     };
-    const tailResult = { err: '', content: [''] };
     const expected = {
       err: 'tail: num.txt: No such file or directory',
       content: ['']
     };
 
     assert.deepStrictEqual(
-      operateTail('-n10', 'num.txt', tailResult, fileOperations),
+      operateTail('10', 'num.txt', fileOperations),
+      expected
+    );
+  });
+  it('should return an off set errot message if the line number is not valid', function() {
+    let fileOperations = {
+      read: () => '0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10',
+      encoding: 'utf8',
+      exist: () => true
+    };
+    const expected = {
+      err: 'tail: illegal offset -- a',
+      content: ['']
+    };
+
+    assert.deepStrictEqual(
+      operateTail('a', 'num.txt', fileOperations),
       expected
     );
   });

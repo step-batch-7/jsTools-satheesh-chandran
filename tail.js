@@ -1,6 +1,6 @@
-const getLastLines = require('./src/lib').getLastLines;
 const { readFileSync, existsSync } = require('fs');
 const { stderr, stdout } = require('process');
+const getLastLines = require('./src/lib').getLastLines;
 
 const main = () => {
   const fileOperations = {
@@ -10,9 +10,9 @@ const main = () => {
   };
 
   const cmdArgs = process.argv.slice(2);
-  const output = getLastLines(cmdArgs, fileOperations);
-  stderr.write(output.err);
-  stdout.write(output.content.join('\n'));
+  const tailResult = getLastLines(cmdArgs, fileOperations);
+  stderr.write(tailResult.err);
+  stdout.write(tailResult.content.join('\n'));
 };
 
 main();

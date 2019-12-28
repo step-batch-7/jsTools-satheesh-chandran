@@ -1,2 +1,2 @@
-(node tail.js -n a docs/num.txt)
+(node tail.js -n a -n 3 docs/num.txt)
 usage: tail [-n #] [file ...]

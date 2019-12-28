@@ -1,3 +1,2 @@
-(node tail.js -n2 -n 3 docs/num.txt)
-19
-20
+(node tail.js -n a docs/num.txt)
+tail: illegal offset -- a
