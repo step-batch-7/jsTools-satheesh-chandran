@@ -67,4 +67,17 @@ describe('getLastLines', function() {
     };
     assert.deepStrictEqual(getLastLines(cmdArgs, fileSystem), expected);
   });
+  it('should return a usage message if the n option occur more than one times', function() {
+    const fileSystem = {
+      read: () => null,
+      encoding: 'utf8',
+      exist: () => false
+    };
+    const cmdArgs = ['-n', '3', '-n', '4', 'num.txt'];
+    const expected = {
+      err: 'usage: tail [-n #] [file ...]',
+      content: ['']
+    };
+    assert.deepStrictEqual(getLastLines(cmdArgs, fileSystem), expected);
+  });
 });

@@ -8,17 +8,23 @@ const getFileContent = function(fileOperations, path) {
 };
 
 const isLineNumValid = function(lineNum) {
+  const requiredModulus = 0;
+  const divisor = 1;
   const num = +lineNum;
-  return Number.isInteger(Math.abs(num)) && Math.abs(num) % 1 == 0;
+  return (
+    Number.isInteger(Math.abs(num)) &&
+    Math.abs(num) % divisor === requiredModulus
+  );
 };
 
 const offsetErr = lineNum => `tail: illegal offset -- ${lineNum}`;
 const pathErr = path => `tail: ${path}: No such file or directory`;
 
 const getTailLines = function(content, lineNum) {
+  const startingPoint = 0;
   const lastNNumberOfLines = content
     .reverse()
-    .slice(0, lineNum)
+    .slice(startingPoint, lineNum)
     .reverse();
   return lastNNumberOfLines;
 };
