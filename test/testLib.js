@@ -24,9 +24,14 @@ describe('getTailOptions', function() {
 
 describe('getLastLines', function() {
   it('should give an offset error message if the given line number is not valid', function() {
+    const fileSystem = {
+      read: () => '',
+      encoding: 'utf8',
+      exist: () => false
+    };
     const cmdArgs = ['-n', 'a', 'num.txt'];
-    const expected = { err: 'tail: illegal offset -- a', content: [''] };
-    assert.deepStrictEqual(getLastLines(cmdArgs, ''), expected);
+    const expected = { err: 'tail: illegal offset -- a', content: [] };
+    assert.deepStrictEqual(getLastLines(cmdArgs, fileSystem), expected);
   });
   it('should return the last given number of lines of content of the given file', function() {
     const fileSystem = {

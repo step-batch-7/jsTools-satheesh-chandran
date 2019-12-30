@@ -1,18 +1,22 @@
 const { readFileSync, existsSync } = require('fs');
-const { stderr, stdout } = require('process');
+const { stderr, stdout, argv } = require('process');
+
 const getLastLines = require('./src/lib').getLastLines;
+
+const displayResult = function(tailResult) {
+  stderr.write(tailResult.err);
+  stdout.write(tailResult.content.join('\n'));
+};
 
 const main = () => {
   const fileOperations = {
     read: readFileSync,
-    encoding: 'utf8',
     exist: existsSync
   };
 
-  const cmdArgs = process.argv.slice(2);
+  const [, , ...cmdArgs] = argv;
   const tailResult = getLastLines(cmdArgs, fileOperations);
-  stderr.write(tailResult.err);
-  stdout.write(tailResult.content.join('\n'));
+  displayResult(tailResult);
 };
 
 main();

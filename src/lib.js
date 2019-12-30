@@ -4,36 +4,39 @@ const { operateTail } = require('./tailOperations');
 
 const usage = () => 'usage: tail [-n #] [file ...]';
 
-const isFilePath = function(userArgs, index) {
-  const PastPositionParam = 1;
-  return (
-    userArgs[index] !== '-n' && userArgs[index - PastPositionParam] !== '-n'
-  );
+const isFilePath = function(currentArg, previousArg) {
+  return currentArg !== '-n' && previousArg !== '-n';
 };
 
 const getFilePath = function(userArgs) {
+  const lastIndex = -1;
   for (let index = 0; index < userArgs.length; index++) {
-    if (isFilePath(userArgs, index)) {
+    if (isFilePath(userArgs[index], userArgs[index + lastIndex])) {
       return userArgs[index];
     }
   }
 };
 
+const getLineNum = function(lineNum) {
+  if (lineNum) {
+    return lineNum;
+  }
+  const defaultNumberOfLine = 10;
+  return defaultNumberOfLine;
+};
+
 const getTailOptions = function(cmdArgs) {
   const filePath = getFilePath(cmdArgs);
-  const desiredPathPosition = 2;
-  if (cmdArgs.indexOf(filePath) > desiredPathPosition) {
+  const pathPositionLimit = 2;
+  if (cmdArgs.indexOf(filePath) > pathPositionLimit) {
     return null;
   }
-  const PastPositionParam = 1;
-  const lineNum = cmdArgs[cmdArgs.indexOf(filePath) - PastPositionParam];
+  const nonExistingIndex = -1;
+  const previousArg = cmdArgs[cmdArgs.indexOf(filePath) + nonExistingIndex];
   const tailOption = {
     filePath: filePath,
-    lineNum: lineNum
+    lineNum: getLineNum(previousArg)
   };
-  if (!tailOption.lineNum) {
-    tailOption.lineNum = 10;
-  }
   return tailOption;
 };
 
