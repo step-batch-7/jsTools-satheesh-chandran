@@ -2,8 +2,6 @@
 
 const { operateTail } = require('./tailOperations');
 
-const usage = () => 'usage: tail [-n #] [file ...]';
-
 const isFilePath = function(currentArg, previousArg) {
   return currentArg !== '-n' && previousArg !== '-n';
 };
@@ -25,29 +23,31 @@ const getLineNum = function(lineNum) {
   return defaultNumberOfLine;
 };
 
-const getTailOptions = function(cmdArgs) {
-  const filePath = getFilePath(cmdArgs);
-  const pathPositionLimit = 2;
-  if (cmdArgs.indexOf(filePath) > pathPositionLimit) {
-    return null;
-  }
-  const nonExistingIndex = -1;
-  const previousArg = cmdArgs[cmdArgs.indexOf(filePath) + nonExistingIndex];
-  const tailOption = {
+const formatTailOptions = function(filePath, previousArg) {
+  return {
     filePath: filePath,
     lineNum: getLineNum(previousArg)
   };
-  return tailOption;
 };
 
-const getLastLines = function(cmdArgs, fileSystem) {
-  const tailResult = { err: '', content: [''] };
-  const tailOptions = getTailOptions(cmdArgs);
-  if (!tailOptions) {
-    tailResult.err = usage();
-    return tailResult;
+const getTailOptions = function(cmdArgs) {
+  const filePath = getFilePath(cmdArgs);
+  const pathPositionLimit = 2;
+  let pathPosition = cmdArgs.indexOf(filePath);
+  if (!filePath) {
+    pathPosition = cmdArgs.length;
   }
-  return operateTail(tailOptions.lineNum, tailOptions.filePath, fileSystem);
+  if (pathPosition > pathPositionLimit) {
+    return null;
+  }
+  const nonExistingIndex = -1;
+  const previousArg = cmdArgs[pathPosition + nonExistingIndex];
+  return formatTailOptions(filePath, previousArg);
+};
+
+const getLastLines = function(cmdArgs, streams, displayResult) {
+  const tailOptions = getTailOptions(cmdArgs);
+  return operateTail(tailOptions, streams, displayResult);
 };
 
 module.exports = {

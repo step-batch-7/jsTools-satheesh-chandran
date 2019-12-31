@@ -1,12 +1,5 @@
 'use strict';
 
-const getFileContent = function(fileOperations, path) {
-  if (fileOperations.exist(path)) {
-    return fileOperations.read(path, 'utf8');
-  }
-  return '';
-};
-
 const isLineNumValid = function(lineNum) {
   const requiredModulus = 0;
   const divisor = 1;
@@ -17,6 +10,7 @@ const isLineNumValid = function(lineNum) {
   );
 };
 
+const usage = () => 'usage: tail [-n #] [file ...]';
 const offsetErr = lineNum => `tail: illegal offset -- ${lineNum}`;
 const pathErr = path => `tail: ${path}: No such file or directory`;
 
@@ -29,26 +23,52 @@ const getTailLines = function(content, lineNum) {
   return lastNNumberOfLines;
 };
 
-const handleError = function(lineNum, filePath, fs) {
-  if (!isLineNumValid(lineNum)) {
-    return offsetErr(lineNum);
+const handleError = function(tailOptions) {
+  if (!tailOptions) {
+    return usage();
   }
-  if (!fs.exist(filePath)) {
-    return pathErr(filePath);
+  if (!isLineNumValid(tailOptions.lineNum)) {
+    return offsetErr(tailOptions.lineNum);
   }
   return '';
 };
 
-const operateTail = function(lineNum, path, fs) {
+const streamAction = function(stream, callback, lineNum) {
+  stream.setEncoding('utf8');
+  stream.on('data', data => {
+    const lastNNumberOfLines = getTailLines(data.split('\n'), lineNum);
+    callback({ err: '', content: lastNNumberOfLines });
+  });
+  stream.on('error', () => {
+    const tailResult = { err: '', content: [''] };
+    tailResult.err = pathErr(stream.path);
+    callback(tailResult);
+  });
+};
+
+const selectStream = function(path, createReadStream, stdin) {
+  if (!path) {
+    return stdin;
+  }
+  return createReadStream(path, 'utf8');
+};
+
+const operateTail = function(tailOptions, streams, displayResult) {
   const tailResult = { err: '', content: [''] };
-  tailResult.err = handleError(lineNum, path, fs);
-  const content = getFileContent(fs, path);
-  tailResult.content = getTailLines(content.split('\n'), lineNum);
-  return tailResult;
+  tailResult.err = handleError(tailOptions);
+  if (tailResult.err) {
+    return tailResult;
+  }
+  const stream = selectStream(
+    tailOptions.filePath,
+    streams.createReadStream,
+    streams.stdin
+  );
+  streamAction(stream, displayResult, tailOptions.lineNum);
+  return { err: '', content: [''] };
 };
 
 module.exports = {
-  getFileContent,
   getTailLines,
   operateTail
 };
