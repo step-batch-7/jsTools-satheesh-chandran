@@ -30,45 +30,41 @@ const handleError = function(tailOptions) {
   if (!isLineNumValid(tailOptions.lineNum)) {
     return offsetErr(tailOptions.lineNum);
   }
-  return '';
 };
 
-const streamAction = function(stream, callback, lineNum) {
+const streamAction = function(stream, lineNum, callback) {
   stream.setEncoding('utf8');
+  let fileContent = '';
   stream.on('data', data => {
-    const lastNNumberOfLines = getTailLines(data.split('\n'), lineNum);
-    callback({ err: '', content: lastNNumberOfLines });
+    fileContent = fileContent + data;
+  });
+  stream.on('end', () => {
+    const lastNNumberOfLines = getTailLines(fileContent.split('\n'), lineNum);
+    callback(lastNNumberOfLines, '');
   });
   stream.on('error', () => {
-    const tailResult = { err: '', content: [''] };
-    tailResult.err = pathErr(stream.path);
-    callback(tailResult);
+    callback([''], pathErr(stream.path));
   });
 };
 
-const selectStream = function(path, createReadStream, stdin) {
-  if (!path) {
-    return stdin;
-  }
-  return createReadStream(path, 'utf8');
+const selectStream = function(path, streams) {
+  return path ? streams.createReadStream(path) : streams.stdin;
 };
 
-const operateTail = function(tailOptions, streams, displayResult) {
-  const tailResult = { err: '', content: [''] };
-  tailResult.err = handleError(tailOptions);
-  if (tailResult.err) {
-    return tailResult;
+const onTailOptions = function(tailOptions, streams, onTailComplete) {
+  const tailErrors = handleError(tailOptions);
+  if (tailErrors) {
+    onTailComplete([''], tailErrors);
+    return;
   }
-  const stream = selectStream(
-    tailOptions.filePath,
-    streams.createReadStream,
-    streams.stdin
-  );
-  streamAction(stream, displayResult, tailOptions.lineNum);
-  return { err: '', content: [''] };
+  const stream = selectStream(tailOptions.filePath, streams);
+  streamAction(stream, tailOptions.lineNum, onTailComplete);
 };
 
 module.exports = {
   getTailLines,
-  operateTail
+  onTailOptions,
+  handleError,
+  streamAction,
+  selectStream
 };

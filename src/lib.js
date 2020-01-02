@@ -1,6 +1,6 @@
 'use strict';
 
-const { operateTail } = require('./tailOperations');
+const { onTailOptions } = require('./tailOperations');
 
 const isFilePath = function(currentArg, previousArg) {
   return currentArg !== '-n' && previousArg !== '-n';
@@ -45,12 +45,12 @@ const getTailOptions = function(cmdArgs) {
   return formatTailOptions(filePath, previousArg);
 };
 
-const getLastLines = function(cmdArgs, streams, displayResult) {
+const performTail = function(cmdArgs, streams, displayResult) {
   const tailOptions = getTailOptions(cmdArgs);
-  return operateTail(tailOptions, streams, displayResult);
+  onTailOptions(tailOptions, streams, displayResult);
 };
 
 module.exports = {
-  getLastLines,
+  performTail,
   getTailOptions
 };

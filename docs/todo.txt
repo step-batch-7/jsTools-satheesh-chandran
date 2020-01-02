@@ -17,13 +17,13 @@
 --- done ---
 
 [v 0.2] Access standard input
-  get rid of magic numbers
+  # get rid of magic numbers
   use read stream for file reading
   only main should know about stream
   pass display function from the main as a parameter
-  testing of proxy main properly becuase it may not return anything
+  # testing of proxy main properly becuase it may not return anything
   how to mock events in test
   introduce using sinon in test
-  only the function which takes the file content or stdin should have the wright to 
-    call the display function
-  handle error in a single place
+  # only the function which takes the file content or stdin should have the right to 
+    call the completion callback
+  # handle error in a single place

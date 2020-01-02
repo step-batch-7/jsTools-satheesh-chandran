@@ -1,18 +1,17 @@
 const { createReadStream } = require('fs');
 const { stderr, stdout, stdin, argv } = require('process');
 
-const getLastLines = require('./src/lib').getLastLines;
+const performTail = require('./src/lib').performTail;
 
 const main = () => {
   const streams = { createReadStream, stdin };
-  const displayResult = function(tailResult) {
-    stderr.write(tailResult.err);
-    stdout.write(tailResult.content.join('\n'));
+  const displayResult = function(content, error) {
+    stderr.write(error);
+    stdout.write(content.join('\n'));
   };
 
   const [, , ...cmdArgs] = argv;
-  const tailResult = getLastLines(cmdArgs, streams, displayResult);
-  displayResult(tailResult);
+  performTail(cmdArgs, streams, displayResult);
 };
 
 main();
