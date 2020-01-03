@@ -32,8 +32,8 @@ describe('getTailOptions', function() {
   });
 });
 
-describe('getlastLines', function() {
-  it('should call the operateTail function with empty tailOptions for more than one n opptions', function() {
+describe('performTail', function() {
+  it('should call the operateTail function with empty tailOptions for more than one n opptions', function(done) {
     const cmdArgs = ['-n', '2', '-n', '5', 'num.txt'];
     const stdin = { setEncoding: sinon.fake(), on: sinon.fake() };
     const readStream = { setEncoding: sinon.fake(), on: sinon.fake() };
@@ -41,11 +41,11 @@ describe('getlastLines', function() {
       stdin: stdin,
       createReadStream: sinon.fake.returns(readStream)
     };
-    const displayResult = sinon.stub();
-    const operateTail = sinon.stub();
+    const displayResult = function(content, error) {
+      assert.deepStrictEqual(content, ['']);
+      assert.equal(error, 'usage: tail [-n #] [file ...]');
+      done();
+    };
     performTail(cmdArgs, streams, displayResult);
-    assert.strictEqual(operateTail.firstCall, null);
-    assert.strictEqual(operateTail.secondCall, null);
-    assert.strictEqual(operateTail.thirdCall, null);
   });
 });
