@@ -4,8 +4,7 @@ const sinon = require('sinon');
 const {
   getTailLines,
   onTailOptions,
-  streamAction,
-  selectStream
+  streamAction
 } = require('../src/tailOperations');
 
 describe('getTailLines', function() {
@@ -40,11 +39,12 @@ describe('onTailOptions', function() {
     const tailOptions = { lineNum: '10', filePath: undefined };
     const stdin = { setEncoding: sinon.fake(), on: sinon.fake() };
     const readStream = { setEncoding: sinon.fake(), on: sinon.fake() };
-    const streams = {
-      stdin: stdin,
-      createReadStream: sinon.fake.returns(readStream)
+    const streamCreator = {
+      createStdin: sinon.fake.returns(stdin),
+      createReadStream: sinon.fake.returns(readStream),
+      create: sinon.fake.returns(stdin)
     };
-    onTailOptions(tailOptions, streams, sinon.fake());
+    onTailOptions(tailOptions, streamCreator, sinon.fake());
     assert.isTrue(stdin.setEncoding.calledWith('utf8'));
     assert.strictEqual(stdin.on.firstCall.args[0], 'data');
     assert.strictEqual(stdin.on.secondCall.args[0], 'end');
@@ -55,27 +55,17 @@ describe('onTailOptions', function() {
     const tailOptions = { lineNum: '10', filePath: 'num.txt' };
     const stdin = { setEncoding: sinon.fake(), on: sinon.fake() };
     const readStream = { setEncoding: sinon.fake(), on: sinon.fake() };
-    const streams = {
-      stdin: stdin,
-      createReadStream: sinon.fake.returns(readStream)
+    const streamCreator = {
+      createStdin: sinon.fake.returns(stdin),
+      createReadStream: sinon.fake.returns(readStream),
+      create: sinon.fake.returns(readStream)
     };
-    onTailOptions(tailOptions, streams, sinon.fake());
+    onTailOptions(tailOptions, streamCreator, sinon.fake());
     assert.isTrue(readStream.setEncoding.calledWith('utf8'));
     assert.strictEqual(readStream.on.firstCall.args[0], 'data');
     assert.strictEqual(readStream.on.secondCall.args[0], 'end');
     assert.strictEqual(readStream.on.thirdCall.args[0], 'error');
     assert.isTrue(readStream.on.calledThrice);
-  });
-});
-
-describe('selectStream', function() {
-  it('should select the stdin stream if file path is undefined', function() {
-    const streams = { stdin: 'stdin', createReadStream: () => 'readStream' };
-    assert.deepStrictEqual(selectStream(undefined, streams), 'stdin');
-  });
-  it('should select the create read stream if path is a true value', function() {
-    const streams = { stdin: 'stdin', createReadStream: () => 'readStream' };
-    assert.deepStrictEqual(selectStream(1, streams), 'readStream');
   });
 });
 

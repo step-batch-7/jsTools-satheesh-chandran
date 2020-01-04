@@ -47,17 +47,13 @@ const streamAction = function(stream, lineNum, callback) {
   });
 };
 
-const selectStream = function(path, streams) {
-  return path ? streams.createReadStream(path) : streams.stdin;
-};
-
-const onTailOptions = function(tailOptions, streams, onTailComplete) {
+const onTailOptions = function(tailOptions, streamCreator, onTailComplete) {
   const tailErrors = handleError(tailOptions);
   if (tailErrors) {
     onTailComplete([''], tailErrors);
     return;
   }
-  const stream = selectStream(tailOptions.filePath, streams);
+  const stream = streamCreator.create(tailOptions.filePath);
   streamAction(stream, tailOptions.lineNum, onTailComplete);
 };
 
@@ -65,6 +61,5 @@ module.exports = {
   getTailLines,
   onTailOptions,
   handleError,
-  streamAction,
-  selectStream
+  streamAction
 };

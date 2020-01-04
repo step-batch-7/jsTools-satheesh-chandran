@@ -45,9 +45,9 @@ const getTailOptions = function(cmdArgs) {
   return formatTailOptions(filePath, previousArg);
 };
 
-const performTail = function(cmdArgs, streams, displayResult) {
+const performTail = function(cmdArgs, streamCreator, displayResult) {
   const tailOptions = getTailOptions(cmdArgs);
-  onTailOptions(tailOptions, streams, displayResult);
+  onTailOptions(tailOptions, streamCreator, displayResult);
 };
 
 module.exports = {

@@ -27,3 +27,6 @@
   # only the function which takes the file content or stdin should have the right to 
     call the completion callback
   handle error in a single place
+  write class for creating stream
+  include that class into jsTool
+  # try to write class for parsing, becuase testing of proxy main will become easier
